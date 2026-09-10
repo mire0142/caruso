@@ -210,11 +210,15 @@
         }
         .gallery-item img {
             width: 100%; height: 100%; object-fit: cover;
-            transition: transform 0.8s ease, filter 0.8s ease;
+            transition: transform 0.8s ease, filter 1.5s ease;
             filter: grayscale(100%);
         }
+        .gallery-item:nth-child(odd) img { transition-delay: 0.15s; }
         .gallery-item:hover img {
             transform: scale(1.05);
+            filter: grayscale(0%);
+        }
+        .gallery-item.in-color img {
             filter: grayscale(0%);
         }
         .gallery-item .placeholder-img {
@@ -803,6 +807,21 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') lightbox.classList.remove('active');
         });
+
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-color');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { rootMargin: '0px 0px -60px 0px', threshold: 0.2 });
+            galleryItems.forEach(item => observer.observe(item));
+        } else {
+            galleryItems.forEach(item => item.classList.add('in-color'));
+        }
     </script>
 
 </body>
